@@ -1,4 +1,4 @@
-package exception;
+package ensalamento.dw.ensalamentodw.exception;
 
 public class CampoInvalidoException extends Exception {
 
