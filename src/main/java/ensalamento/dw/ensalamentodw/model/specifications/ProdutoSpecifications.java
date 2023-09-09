@@ -57,14 +57,41 @@ public class ProdutoSpecifications {
 				predicates.add(cb.lessThanOrEqualTo(root.get("peso"), seletor.getPesoMaximo()));
 			}
 
-			
-			
-			// TODO Adicionar outros filtros aqui
 //            private Double valorMinimo;
 //            private Double valorMaximo;
+			if (seletor.getValorMinimo() != null && seletor.getValorMaximo() != null) {
+				// WHERE valor BETWEEN min AND max
+				predicates.add(cb.between(root.get("valor"), seletor.getValorMinimo(), seletor.getValorMaximo()));
+			} else if (seletor.getValorMinimo() != null) {
+				// WHERE valor >= min
+				predicates.add(cb.greaterThanOrEqualTo(root.get("valor"), seletor.getValorMinimo()));
+			} else if (seletor.getValorMaximo() != null) {
+				// WHERE peso <= max
+				predicates.add(cb.lessThanOrEqualTo(root.get("valor"), seletor.getValorMaximo()));
+			}
+
 //            private LocalDate dataCadastroInicial;
 //            private LocalDate dataCadastroFinal;
-			// Por CNPJ
+			// COMO FILTRAR POR "PRODUTO.DATA"
+			if (seletor.getDataCadastroInicial() != null & seletor.getDataCadastroFinal() != null) {
+				if (seletor.getDataCadastroInicial() != null && seletor.getDataCadastroFinal() != null) {
+					// WHERE data BETWEEN min AND max
+					predicates.add(cb.between(root.get("data"), seletor.getDataCadastroInicial(),
+							seletor.getDataCadastroFinal()));
+				}
+			}
+
+			// CNPJ
+			if (seletor.getFabricante() != null) {
+				predicates.add(
+						cb.like(root.join("fabricanteDoProduto").get("cnpj"), "%" + seletor.getFabricante() + "%"));
+				if (seletor.getCnpjFabricante() != null && seletor.getCnpjFabricante().isEmpty()) {
+					// WHERE p.fabricante like '%Rider%'
+					// WHERE f.nome like '%Rider%'
+					// JPQL = Java Persistence Query Language
+					predicates.add(cb.equal(root.join("fabricanteDoProduto").get("cnpj"), seletor.getCnpjFabricante()));
+				}
+			}
 
 			return cb.and(predicates.toArray(new Predicate[0]));
 		};
