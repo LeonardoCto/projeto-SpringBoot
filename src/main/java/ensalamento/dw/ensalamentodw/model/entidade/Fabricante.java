@@ -20,6 +20,7 @@ public class Fabricante {
 	private String nome;
 	private String cnpj;
 	private String uf;
+	private String cidade;
 	private String cep;
 
 	@JsonBackReference
@@ -30,16 +31,31 @@ public class Fabricante {
 		super();
 	}
 
-	public Fabricante(Integer id, String nome, String cnpj, List<Produto> produtos) {
+	
+	public Fabricante(Integer id, String nome, String cnpj, String uf, String cidade, String cep,
+			List<Produto> produtos) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.cnpj = cnpj;
+		this.uf = uf;
+		this.cidade = cidade;
+		this.cep = cep;
 		this.produtos = produtos;
 	}
 
+
 	public Integer getId() {
 		return id;
+	}
+
+	
+	public String getCidade() {
+		return cidade;
+	}
+
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
 	}
 
 	public void setId(Integer id) {
