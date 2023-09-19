@@ -3,29 +3,33 @@ package ensalamento.dw.ensalamentodw.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import ensalamento.dw.ensalamentodw.exception.CampoInvalidoException;
 import ensalamento.dw.ensalamentodw.model.entidade.Produto;
 import ensalamento.dw.ensalamentodw.model.repository.ProdutoRepository;
-import jakarta.transaction.Transactional;
+import ensalamento.dw.ensalamentodw.model.seletor.ProdutoSeletor;
+import ensalamento.dw.ensalamentodw.model.specifications.ProdutoSpecifications;
 
 @Service
 public class ProdutoService {
 
-	// Anteriormente fazíamos:
-	// private ProdutoDAO dao = new ProdutoDAO();
 	@Autowired
 	private ProdutoRepository produtoRepository;
 
-	@Transactional
 	public List<Produto> listarTodos() {
 		return produtoRepository.findAll();
 	}
 
+	public List<Produto> listarComSeletor(ProdutoSeletor seletor) {
+		//https://www.baeldung.com/spring-data-jpa-query-by-example
+		Specification<Produto> specification = ProdutoSpecifications.comFiltros(seletor);
+		return produtoRepository.findAll(specification);
+	}
+
 	public Produto consultarPorId(Long id) {
-		// fonte:
-		// https://stackoverflow.com/questions/52656517/no-serializer-found-for-class-org-hibernate-proxy-pojo-bytebuddy-bytebuddyinterc
+		//fonte: https://stackoverflow.com/questions/52656517/no-serializer-found-for-class-org-hibernate-proxy-pojo-bytebuddy-bytebuddyinterc
 		return produtoRepository.findById(id.longValue()).get();
 	}
 
@@ -44,7 +48,7 @@ public class ProdutoService {
 		return true;
 	}
 
-	// Métodos auxiliares
+	//Métodos auxiliares
 	private void validarCamposObrigatorios(Produto produto) throws CampoInvalidoException {
 		String mensagemValidacao = "";
 		mensagemValidacao += validarCampoString(produto.getNome(), "nome");
@@ -52,20 +56,20 @@ public class ProdutoService {
 		mensagemValidacao += validarCampoDouble(produto.getValor(), "valor");
 		mensagemValidacao += validarCampoDouble(produto.getPeso(), "peso");
 
-		if (!mensagemValidacao.isEmpty()) {
+		if(!mensagemValidacao.isEmpty()) {
 			throw new CampoInvalidoException(mensagemValidacao);
 		}
 	}
 
 	private String validarCampoString(String valorCampo, String nomeCampo) {
-		if (valorCampo == null || valorCampo.trim().isEmpty()) {
+		if(valorCampo == null || valorCampo.trim().isEmpty()) {
 			return "Informe o " + nomeCampo + " \n";
 		}
 		return "";
 	}
 
 	private String validarCampoDouble(Double valorCampo, String nomeCampo) {
-		if (valorCampo == null) {
+		if(valorCampo == null) {
 			return "Informe o " + nomeCampo + " \n";
 		}
 		return "";
